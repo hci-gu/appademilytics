@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appademilytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appademilytics
+  template:
+    metadata:
+      labels:
+        app: appademilytics
+    spec:
+      containers:
+        - name: appademilytics
+          image: 'appademin/appademilytics:0.2.1'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: web
+              protocol: TCP
+          env:
+          - name: NODE_ENV
+            value: production
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: appademilytics-secret
+                key: api-key
+          - name: MONGO_HOST
+            value: mongo-service:27017
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: mongo-user
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: mongo-password 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appademilytics-service
+spec:
+  selector:
+    app: appademilytics
+  ports:
+    - protocol: TCP
+      port: 3000

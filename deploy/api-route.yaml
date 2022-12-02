@@ -1,0 +1,19 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: appademilytics
+  namespace: appademin
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  host: analytics.prod.appadem.in
+  to:
+    kind: Service
+    name: appademilytics-service
+    weight: 100
+  port:
+    targetPort: 3000
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
